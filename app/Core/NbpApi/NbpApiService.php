@@ -3,10 +3,10 @@
 namespace GoldPrices\Core\NbpApi;
 
 
-use Gold\Exceptions\NbpApiFailureException;
-use Gold\Exceptions\TimeSpanOverOneYearException;
 use GoldPrices\Core\GoldPricesFetching\GoldPricesFetchingInterface;
 use GoldPrices\Core\GoldPricesFetching\GoldPricesFetchingRequestor;
+use GoldPrices\Core\NbpApi\Exceptions\NbpApiFailureException;
+use GoldPrices\Core\NbpApi\Exceptions\TimeSpanOverOneYearException;
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
 
@@ -45,9 +45,13 @@ class NbpApiService implements GoldPricesFetchingInterface
                 self::API_URL,
                 $requestor->getStartDate()->format('Y-m-d'),
                 $requestor->getEndDate()->format('Y-m-d')
-            )
+            ),
+            [
+                'exceptions' => false,
+            ]
         );
-        if (!$response->getStatusCode() === 200) {
+
+        if ($response->getStatusCode() !== 200) {
             throw new NbpApiFailureException();
         }
 

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Gold\Exceptions;
+namespace GoldPrices\Core\NbpApi\Exceptions;
 
 
 class NbpApiFailureException extends \Exception
