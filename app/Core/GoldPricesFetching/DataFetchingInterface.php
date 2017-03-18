@@ -7,10 +7,9 @@ namespace GoldPrices\Core\GoldPricesFetching;
 interface GoldPricesFetchingInterface
 {
     /**
-     * Gets gold prices between any given dates.
-     * @param \DateTimeInterface $startDate
-     * @param \DateTimeInterface $endDate
-     * @return array
+     * Gets gold prices between given dates.
+     * @param DataFetchingRequestor $requestor
+     * @return mixed
      */
-    public function getGoldPrices(\DateTimeInterface $startDate, \DateTimeInterface $endDate);
+    public function getGoldPrices(DataFetchingRequestor $requestor);
 }
