@@ -23,6 +23,7 @@ class ApiCallTest extends TestCase
      */
     public function testBasicCall()
     {
+        $httpCallHistory = [];
         $client = $this->prepareMockClient(
             $httpCallHistory,
             [
@@ -84,6 +85,7 @@ class ApiCallTest extends TestCase
      */
     public function testCallWithTimeSpanOverOneYear()
     {
+        $httpCallHistory = [];
         $client = $this->prepareMockClient(
             $httpCallHistory,
             [
@@ -114,6 +116,7 @@ class ApiCallTest extends TestCase
      */
     public function testCallWithServerError()
     {
+        $httpCallHistory = [];
         $client = $this->prepareMockClient(
             $httpCallHistory,
             [
