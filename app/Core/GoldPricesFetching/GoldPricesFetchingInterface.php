@@ -8,8 +8,8 @@ interface GoldPricesFetchingInterface
 {
     /**
      * Gets gold prices between given dates.
-     * @param DataFetchingRequestor $requestor
+     * @param GoldPricesFetchingRequestor $requestor
      * @return mixed
      */
-    public function getGoldPrices(DataFetchingRequestor $requestor);
+    public function getGoldPrices(GoldPricesFetchingRequestor $requestor);
 }

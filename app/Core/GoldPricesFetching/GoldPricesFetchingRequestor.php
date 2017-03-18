@@ -4,7 +4,7 @@
 namespace GoldPrices\Core\GoldPricesFetching;
 
 
-class DataFetchingRequestor
+class GoldPricesFetchingRequestor
 {
     /** @var  \DateTimeInterface */
     protected $startDate;

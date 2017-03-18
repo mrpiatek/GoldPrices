@@ -1,53 +1,56 @@
 <?php
 
-namespace Gold\Services;
+namespace GoldPrices\Core\NbpApi;
 
 
 use Gold\Exceptions\NbpApiFailureException;
 use Gold\Exceptions\TimeSpanOverOneYearException;
+use GoldPrices\Core\GoldPricesFetching\GoldPricesFetchingInterface;
+use GoldPrices\Core\GoldPricesFetching\GoldPricesFetchingRequestor;
+use GuzzleHttp\Client;
+use Psr\Http\Message\ResponseInterface;
 
-class NbpApiService
+class NbpApiService implements GoldPricesFetchingInterface
 {
+    protected const API_URL = 'http://api.nbp.pl/api/cenyzlota/%s/%s';
     /** @var  Client */
     protected $httpClient;
 
-    protected const API_URL = 'http://api.nbp.pl/api/cenyzlota';
-
     /**
-     * Gets gold prices for each day between any given dates.
-     * @param \DateTimeInterface $startDate
-     * @param \DateTimeInterface $endDate
-     * @return array
+     * NbpApiService constructor.
+     * @param Client $httpClient
      */
-    public function getGoldData(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
+    public function __construct(Client $httpClient)
     {
-        $data = [];
-        /** @var \DateTimeInterface $diff */
-        $diff = $endDate->diff($startDate);
-        for ($i = 0; $i < $diff->y; $i++) {
-            $data[] = $this->getDataForOneYear($startDate, $endDate->addYears(1));
-        }
-        return $data;
+        $this->httpClient = $httpClient;
     }
 
     /**
      * Gets gold prices for maximum one year time span.
-     * @param \DateTimeInterface $startDate
-     * @param \DateTimeInterface $endDate
-     * @return array
+     * @param GoldPricesFetchingRequestor $requestor
+     * @return string Unformatted API response body
      * @throws NbpApiFailureException
      * @throws TimeSpanOverOneYearException
+     * @internal param \DateTimeInterface $startDate
+     * @internal param \DateTimeInterface $endDate
      */
-    private function getDataForOneYear(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
+    public function getGoldPrices(GoldPricesFetchingRequestor $requestor)
     {
-        if($startDate->diff($endDate)->y > 1){
+        if ($requestor->getStartDate()->diff($requestor->getEndDate())->y > 1) {
             throw new TimeSpanOverOneYearException();
         }
-        // todo format
-        $data = $this->httpClient->get(self::API_URL . '/' . $startDate->format('Y-m-d') . '/' . $endDate->format('Y-m-d'));
-        if(!$data->statusCodeOk){
+        /** @var ResponseInterface $response */
+        $response = $this->httpClient->get(
+            sprintf(
+                self::API_URL,
+                $requestor->getStartDate()->format('Y-m-d'),
+                $requestor->getEndDate()->format('Y-m-d')
+            )
+        );
+        if (!$response->getStatusCode() === 200) {
             throw new NbpApiFailureException();
         }
-        return $data;
+
+        return $response->getBody()->getContents();
     }
 }
