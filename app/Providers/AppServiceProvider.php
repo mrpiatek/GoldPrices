@@ -2,6 +2,8 @@
 
 namespace GoldPrices\Providers;
 
+use GoldPrices\Core\GoldPricesFetching\GoldPricesFetchingInterface;
+use GoldPrices\Core\NbpApi\NbpApiService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +25,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(GoldPricesFetchingInterface::class, NbpApiService::class);
     }
 }
