@@ -13,7 +13,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class NbpApiService implements GoldPricesFetchingInterface
 {
-    protected const API_URL = 'http://api.nbp.pl/api/cenyzlota/%s/%s';
+    const API_URL = 'http://api.nbp.pl/api/cenyzlota/%s/%s';
     /** @var  Client */
     protected $httpClient;
 
