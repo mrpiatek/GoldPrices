@@ -28,7 +28,7 @@ class NbpApiService implements GoldPricesFetchingInterface
     /**
      * Gets gold prices for maximum one year time span.
      * @param GoldPricesFetchingRequestor $requestor
-     * @return string Unformatted API response body
+     * @return string Parsed gold prices
      * @throws NbpApiFailureException
      * @throws TimeSpanOverOneYearException
      * @internal param \DateTimeInterface $startDate
@@ -55,6 +55,6 @@ class NbpApiService implements GoldPricesFetchingInterface
             throw new NbpApiFailureException();
         }
 
-        return $response->getBody()->getContents();
+        return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
     }
 }
