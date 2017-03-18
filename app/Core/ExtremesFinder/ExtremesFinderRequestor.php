@@ -10,9 +10,9 @@ class ExtremesFinderRequestor
 
     /**
      * ExtremesFinderRequestor constructor.
-     * @param $data
+     * @param array $data
      */
-    public function __construct($data)
+    public function __construct(array $data)
     {
         $this->data = $data;
     }
@@ -20,7 +20,7 @@ class ExtremesFinderRequestor
     /**
      * @return mixed
      */
-    public function getData()
+    public function getData(): array
     {
         return $this->data;
     }
