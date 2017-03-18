@@ -5,6 +5,7 @@ namespace GoldPrices\Core\NbpApi;
 
 use GoldPrices\Core\GoldPricesFetching\GoldPricesFetchingInterface;
 use GoldPrices\Core\GoldPricesFetching\GoldPricesFetchingRequestor;
+use GoldPrices\Core\GoldPricesFetching\GoldPricesFetchingResponder;
 use GoldPrices\Core\NbpApi\Exceptions\NbpApiFailureException;
 use GoldPrices\Core\NbpApi\Exceptions\TimeSpanOverOneYearException;
 use GuzzleHttp\Client;
@@ -28,7 +29,7 @@ class NbpApiService implements GoldPricesFetchingInterface
     /**
      * Gets gold prices for maximum one year time span.
      * @param GoldPricesFetchingRequestor $requestor
-     * @return string Parsed gold prices
+     * @return GoldPricesFetchingResponder
      * @throws NbpApiFailureException
      * @throws TimeSpanOverOneYearException
      * @internal param \DateTimeInterface $startDate
@@ -55,6 +56,6 @@ class NbpApiService implements GoldPricesFetchingInterface
             throw new NbpApiFailureException();
         }
 
-        return json_decode($response->getBody()->getContents(), JSON_OBJECT_AS_ARRAY);
+        return new NbpApiResponder($response->getBody()->getContents());
     }
 }
