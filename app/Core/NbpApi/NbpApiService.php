@@ -53,12 +53,17 @@ class NbpApiService implements GoldPricesFetchingInterface
                 sprintf(
                     self::API_URL,
                     $dateRange['from']->format('Y-m-d'),
-                    $dateRange['from']->format('Y-m-d')
+                    $dateRange['to']->format('Y-m-d')
                 ),
                 [
                     'exceptions' => false,
                 ]
             );
+
+            if ($response->getStatusCode() == 404) {
+                // 404 means there is no data for given period
+                continue;
+            }
 
             if ($response->getStatusCode() !== 200) {
                 throw new NbpApiFailureException();
