@@ -13,6 +13,16 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::get(
+    '/test/{start_date}/{end_date}',
+    function (Request $request, $start_date, $end_date) {
+        /** @var \GoldPrices\Core\NbpApi\NbpApiDateRangeChunker $chunker */
+        $chunker = app(\GoldPrices\Core\NbpApi\NbpApiDateRangeChunker::class);
+        var_dump(
+            $chunker->chunk(
+                new DateTime($start_date),
+                new DateTime($end_date)
+            )
+        );
+
 });
