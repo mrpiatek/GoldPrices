@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use GoldPrices\Core\GoldPricesFetching\GoldPricesFetchingRequestor;
 use GoldPrices\Core\NbpApi\Exceptions\NbpApiFailureException;
-use GoldPrices\Core\NbpApi\Exceptions\TimeSpanOverOneYearException;
+use GoldPrices\Core\NbpApi\NbpApiDateRangeChunker;
 use GoldPrices\Core\NbpApi\NbpApiService;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
@@ -31,7 +31,7 @@ class ApiCallTest extends TestCase
             ]
         );
 
-        $nbpApi = new NbpApiService($client);
+        $nbpApi = new NbpApiService($client, new NbpApiDateRangeChunker());
 
         $startDate = (new \DateTime())->modify('-1 year');
         $endDate = new \DateTime();
@@ -78,37 +78,6 @@ class ApiCallTest extends TestCase
     }
 
     /**
-     * Test if service will fail if requested with time range exceeding one year
-     *
-     * @expectedException TimeSpanOverOneYearException
-     * @return void
-     */
-    public function testCallWithTimeSpanOverOneYear()
-    {
-        $httpCallHistory = [];
-        $client = $this->prepareMockClient(
-            $httpCallHistory,
-            [
-                new Response(200, [], '[{"data":"2017-03-17","cena":159.31}]'),
-            ]
-        );
-
-        $nbpApi = new NbpApiService($client);
-
-        $startDate = (new \DateTime())->modify('-10 year');
-        $endDate = new \DateTime();
-
-        $this->expectException(TimeSpanOverOneYearException::class);
-
-        $nbpApi->getGoldPrices(
-            new GoldPricesFetchingRequestor(
-                $startDate,
-                $endDate
-            )
-        );
-    }
-
-    /**
      * Test if service will fail if there is an internal error with the NBP API
      *
      * @expectedException NbpApiFailureException
@@ -124,14 +93,14 @@ class ApiCallTest extends TestCase
             ]
         );
 
-        $nbpApi = new NbpApiService($client);
+        $nbpApi = new NbpApiService($client, new NbpApiDateRangeChunker());
 
         $this->expectException(NbpApiFailureException::class);
 
         $nbpApi->getGoldPrices(
             new GoldPricesFetchingRequestor(
                 new \DateTime(),
-                new \DateTime()
+                new \DateTime('-1 year')
             )
         );
     }

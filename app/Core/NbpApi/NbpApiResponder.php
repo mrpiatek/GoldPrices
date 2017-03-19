@@ -25,10 +25,12 @@ class NbpApiResponder extends GoldPricesFetchingResponder
      */
     private function formatData($data)
     {
-        $data = json_decode($data, JSON_OBJECT_AS_ARRAY);
         $result = [];
         foreach ($data as $item) {
-            $result[$item['data']] = floatval($item['cena']);
+            $item = json_decode($item, JSON_OBJECT_AS_ARRAY);
+            foreach ($item as $goldPrice) {
+                $result[$goldPrice['data']] = floatval($goldPrice['cena']);
+            }
         }
 
         return $result;

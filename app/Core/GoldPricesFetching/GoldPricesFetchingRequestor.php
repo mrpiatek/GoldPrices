@@ -13,27 +13,27 @@ class GoldPricesFetchingRequestor
 
     /**
      * DataFetchingRequestor constructor.
-     * @param \DateTimeInterface $startDate
-     * @param \DateTimeInterface $endDate
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
      */
-    public function __construct(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
+    public function __construct(\DateTime $startDate, \DateTime $endDate)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
     }
 
     /**
-     * @return \DateTimeInterface
+     * @return \DateTime
      */
-    public function getStartDate(): \DateTimeInterface
+    public function getStartDate(): \DateTime
     {
         return $this->startDate;
     }
 
     /**
-     * @return \DateTimeInterface
+     * @return \DateTime
      */
-    public function getEndDate(): \DateTimeInterface
+    public function getEndDate(): \DateTime
     {
         return $this->endDate;
     }

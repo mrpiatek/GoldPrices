@@ -14,7 +14,7 @@ class NbpApiResponderTest extends TestCase
      */
     public function testNbpResponderParser()
     {
-        $rawJson =
+        $rawJsons = [
             '[
                 {
                   "data": "2017-03-10",
@@ -40,7 +40,22 @@ class NbpApiResponderTest extends TestCase
                   "data": "2017-03-17",
                   "cena": 159.31
                 }
-            ]';
+            ]',
+            '[
+                {
+                  "data": "2018-03-15",
+                  "cena": 157.82
+                },
+                {
+                  "data": "2018-03-16",
+                  "cena": 156.88
+                },
+                {
+                  "data": "2018-03-17",
+                  "cena": 160.00
+                }
+            ]',
+        ];
 
         $expectedResult = [
             '2017-03-10' => 158.51,
@@ -49,9 +64,11 @@ class NbpApiResponderTest extends TestCase
             '2017-03-15' => 157.62,
             '2017-03-16' => 156.65,
             '2017-03-17' => 159.31,
-
+            '2018-03-15' => 157.82,
+            '2018-03-16' => 156.88,
+            '2018-03-17' => 160.00,
         ];
-        $respoder = new NbpApiResponder($rawJson);
+        $respoder = new NbpApiResponder($rawJsons);
 
         $this->assertEquals($expectedResult, $respoder->getGoldPrices());
     }

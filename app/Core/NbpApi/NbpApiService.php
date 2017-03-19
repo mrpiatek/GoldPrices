@@ -7,7 +7,6 @@ use GoldPrices\Core\GoldPricesFetching\GoldPricesFetchingInterface;
 use GoldPrices\Core\GoldPricesFetching\GoldPricesFetchingRequestor;
 use GoldPrices\Core\GoldPricesFetching\GoldPricesFetchingResponder;
 use GoldPrices\Core\NbpApi\Exceptions\NbpApiFailureException;
-use GoldPrices\Core\NbpApi\Exceptions\TimeSpanOverOneYearException;
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
 
@@ -17,45 +16,57 @@ class NbpApiService implements GoldPricesFetchingInterface
     /** @var  Client */
     protected $httpClient;
 
+    /** @var  NbpApiDateRangeChunker */
+    protected $chunker;
+
     /**
      * NbpApiService constructor.
      * @param Client $httpClient
+     * @param NbpApiDateRangeChunker $chunker
      */
-    public function __construct(Client $httpClient)
+    public function __construct(Client $httpClient, NbpApiDateRangeChunker $chunker)
     {
         $this->httpClient = $httpClient;
+        $this->chunker = $chunker;
     }
+
 
     /**
      * Gets gold prices for maximum one year time span.
      * @param GoldPricesFetchingRequestor $requestor
      * @return GoldPricesFetchingResponder
      * @throws NbpApiFailureException
-     * @throws TimeSpanOverOneYearException
      * @internal param \DateTimeInterface $startDate
      * @internal param \DateTimeInterface $endDate
      */
-    public function getGoldPrices(GoldPricesFetchingRequestor $requestor)
+    public function getGoldPrices(GoldPricesFetchingRequestor $requestor): GoldPricesFetchingResponder
     {
-        if ($requestor->getStartDate()->diff($requestor->getEndDate())->y > 1) {
-            throw new TimeSpanOverOneYearException();
-        }
-        /** @var ResponseInterface $response */
-        $response = $this->httpClient->get(
-            sprintf(
-                self::API_URL,
-                $requestor->getStartDate()->format('Y-m-d'),
-                $requestor->getEndDate()->format('Y-m-d')
-            ),
-            [
-                'exceptions' => false,
-            ]
+        $chunks = $this->chunker->chunk(
+            $requestor->getStartDate(),
+            $requestor->getEndDate()
         );
 
-        if ($response->getStatusCode() !== 200) {
-            throw new NbpApiFailureException();
+        $results = [];
+        foreach ($chunks as $dateRange) {
+            /** @var ResponseInterface $response */
+            $response = $this->httpClient->get(
+                sprintf(
+                    self::API_URL,
+                    $dateRange['from']->format('Y-m-d'),
+                    $dateRange['from']->format('Y-m-d')
+                ),
+                [
+                    'exceptions' => false,
+                ]
+            );
+
+            if ($response->getStatusCode() !== 200) {
+                throw new NbpApiFailureException();
+            }
+
+            $results[] = $response->getBody()->getContents();
         }
 
-        return new NbpApiResponder($response->getBody()->getContents());
+        return new NbpApiResponder($results);
     }
 }
