@@ -2,6 +2,10 @@
 
 Shows how one could have invested in gold in past 10 years based on data provided by NBP WEB API.
 
+## Core code
+
+Core functionality is stored in `app/Core` directory.
+
 ## Dependencies
 
 - GuzzleHttp.
